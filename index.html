@@ -9,6 +9,8 @@
     <style>
         .lesson { border: 1px solid #ccc; padding: 10px; margin: 10px 0; width: 300px; }
         .lesson-icon { font-size: 40px; }
+        .error { color: red; }
+        .success { color: green; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -17,6 +19,7 @@
         <button @click="toggleCart" :disabled="numberOfItems === 0">
             <i class="fa fa-shopping-cart"></i> Cart ({{ numberOfItems }})
         </button>
+        <p v-if="orderMessage" class="success">{{ orderMessage }}</p>
 
         <div v-if="!displayCart">
             <div v-for="lesson in lessons" :key="lesson.id" class="lesson">
@@ -39,7 +42,16 @@
                 <p>Quantity: {{ countInCart(lesson.id) }}</p>
                 <button @click="removeFromCart(lesson)">Remove</button>
             </div>
-            <p>Checkout coming soon...</p>
+            <h2>Checkout</h2>
+            <p>
+                Name: <input v-model="order.name" placeholder="Letters only">
+                <span v-if="order.name && !nameIsValid" class="error">Name must be letters only</span>
+            </p>
+            <p>
+                Phone: <input v-model="order.phone" placeholder="Numbers only">
+                <span v-if="order.phone && !phoneIsValid" class="error">Phone must be numbers only</span>
+            </p>
+            <button @click="checkout" :disabled="!canCheckout">Checkout</button>
         </div>
     </div>
 
@@ -63,7 +75,12 @@
                         { id: 1010, subject: "Swimming", location: "Mill Hill",     price: 110, spaces: 5, icon: "fa-tint" }
                     ],
                     cart: [],
-                    displayCart: false
+                    displayCart: false,
+                    order: {
+                        name: "",
+                        phone: ""
+                    },
+                    orderMessage: ""
                 }
             },
             computed: {
@@ -72,6 +89,15 @@
                 },
                 cartLessons() {
                     return this.lessons.filter(lesson => this.countInCart(lesson.id) > 0)
+                },
+                nameIsValid() {
+                    return /^[A-Za-z]+( [A-Za-z]+)*$/.test(this.order.name)
+                },
+                phoneIsValid() {
+                    return /^[0-9]+$/.test(this.order.phone)
+                },
+                canCheckout() {
+                    return this.nameIsValid && this.phoneIsValid && this.cart.length > 0
                 }
             },
             methods: {
@@ -81,6 +107,7 @@
                 addToCart(lesson) {
                     this.cart.push(lesson.id)
                     lesson.spaces--
+                    this.orderMessage = ""
                 },
                 toggleCart() {
                     this.displayCart = !this.displayCart
@@ -97,6 +124,13 @@
                     if (this.cart.length === 0) {
                         this.displayCart = false
                     }
+                },
+                checkout() {
+                    this.orderMessage = "Thank you " + this.order.name + ", your order for " + this.cart.length + " lesson space(s) has been submitted!"
+                    this.cart = []
+                    this.order.name = ""
+                    this.order.phone = ""
+                    this.displayCart = false
                 }
             }
         }).mount('#app')
