@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        .lesson-image { width: 200px; height: auto; }
+        .lesson { border: 1px solid #ccc; padding: 10px; margin: 10px 0; width: 300px; }
+        .lesson-icon { font-size: 40px; }
     </style>
 </head>
 <body>
@@ -18,12 +19,14 @@
         </button>
 
         <div v-if="!displayCart">
-            <img :src="lesson.image" :alt="lesson.imageAlt" class="lesson-image">
-            <h2>{{ lesson.subject }}</h2>
-            <p>Location: {{ lesson.location }}</p>
-            <p>Price: £{{ lesson.price }}</p>
-            <p>Spaces left: {{ lesson.spaces }}</p>
-            <button @click="addToCart" :disabled="!canAddToCart">Add to cart</button>
+            <div v-for="lesson in lessons" :key="lesson.id" class="lesson">
+                <i :class="'fa ' + lesson.icon + ' lesson-icon'"></i>
+                <h2>{{ lesson.subject }}</h2>
+                <p>Location: {{ lesson.location }}</p>
+                <p>Price: £{{ lesson.price }}</p>
+                <p>Spaces left: {{ lesson.spaces }}</p>
+                <button @click="addToCart(lesson)" :disabled="!canAddToCart(lesson)">Add to cart</button>
+            </div>
         </div>
 
         <div v-else>
@@ -39,31 +42,34 @@
             data() {
                 return {
                     sitename: "After School Classes",
-                    lesson: {
-                        id: 1001,
-                        subject: "Maths",
-                        location: "Hendon",
-                        price: 100,
-                        spaces: 5,
-                        image: "images/maths.jpg",
-                        imageAlt: "Open maths textbook with a pen"
-                    },
+                    lessons: [
+                        { id: 1001, subject: "Maths",    location: "Hendon",        price: 100, spaces: 5, icon: "fa-calculator" },
+                        { id: 1002, subject: "English",  location: "Colindale",     price: 90,  spaces: 5, icon: "fa-book" },
+                        { id: 1003, subject: "Science",  location: "Brent Cross",   price: 95,  spaces: 5, icon: "fa-flask" },
+                        { id: 1004, subject: "Art",      location: "Golders Green", price: 80,  spaces: 5, icon: "fa-paint-brush" },
+                        { id: 1005, subject: "Music",    location: "Hendon",        price: 85,  spaces: 5, icon: "fa-music" },
+                        { id: 1006, subject: "Football", location: "Colindale",     price: 70,  spaces: 5, icon: "fa-futbol-o" },
+                        { id: 1007, subject: "Coding",   location: "Hendon",        price: 120, spaces: 5, icon: "fa-code" },
+                        { id: 1008, subject: "Drama",    location: "Brent Cross",   price: 75,  spaces: 5, icon: "fa-microphone" },
+                        { id: 1009, subject: "Chess",    location: "Golders Green", price: 60,  spaces: 5, icon: "fa-puzzle-piece" },
+                        { id: 1010, subject: "Swimming", location: "Mill Hill",     price: 110, spaces: 5, icon: "fa-tint" }
+                    ],
                     cart: [],
                     displayCart: false
                 }
             },
             computed: {
-                canAddToCart() {
-                    return this.lesson.spaces > 0
-                },
                 numberOfItems() {
                     return this.cart.length
                 }
             },
             methods: {
-                addToCart() {
-                    this.cart.push(this.lesson.id)
-                    this.lesson.spaces--
+                canAddToCart(lesson) {
+                    return lesson.spaces > 0
+                },
+                addToCart(lesson) {
+                    this.cart.push(lesson.id)
+                    lesson.spaces--
                 },
                 toggleCart() {
                     this.displayCart = !this.displayCart
