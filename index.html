@@ -22,7 +22,20 @@
         <p v-if="orderMessage" class="success">{{ orderMessage }}</p>
 
         <div v-if="!displayCart">
-            <div v-for="lesson in lessons" :key="lesson.id" class="lesson">
+            <p>
+                Sort by:
+                <select v-model="sortAttribute">
+                    <option value="subject">Subject</option>
+                    <option value="location">Location</option>
+                    <option value="price">Price</option>
+                    <option value="spaces">Spaces</option>
+                </select>
+                <select v-model="sortOrder">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </p>
+            <div v-for="lesson in sortedLessons" :key="lesson.id" class="lesson">
                 <i :class="'fa ' + lesson.icon + ' lesson-icon'"></i>
                 <h2>{{ lesson.subject }}</h2>
                 <p>Location: {{ lesson.location }}</p>
@@ -80,10 +93,21 @@
                         name: "",
                         phone: ""
                     },
-                    orderMessage: ""
+                    orderMessage: "",
+                    sortAttribute: "subject",
+                    sortOrder: "asc"
                 }
             },
             computed: {
+                sortedLessons() {
+                    const attribute = this.sortAttribute
+                    const direction = this.sortOrder === "asc" ? 1 : -1
+                    return [...this.lessons].sort((a, b) => {
+                        if (a[attribute] > b[attribute]) return 1 * direction
+                        if (a[attribute] < b[attribute]) return -1 * direction
+                        return 0
+                    })
+                },
                 numberOfItems() {
                     return this.cart.length
                 },
