@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After School Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .lesson-image { width: 200px; height: auto; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>{{ sitename }}</h1>
+
+        <img :src="lesson.image" :alt="lesson.imageAlt" class="lesson-image">
+        <h2>{{ lesson.subject }}</h2>
+        <p>Location: {{ lesson.location }}</p>
+        <p>Price: £{{ lesson.price }}</p>
+        <p>Spaces left: {{ lesson.spaces }}</p>
+    </div>
+
+    <script type="module">
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    sitename: "After School Classes",
+                    lesson: {
+                        id: 1001,
+                        subject: "Maths",
+                        location: "Hendon",
+                        price: 100,
+                        spaces: 5,
+                        image: "images/maths.jpg",
+                        imageAlt: "Open maths textbook with a pen"
+                    }
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
