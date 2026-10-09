@@ -13,12 +13,23 @@
 <body>
     <div id="app">
         <h1>{{ sitename }}</h1>
+        <button @click="toggleCart" :disabled="numberOfItems === 0">
+            <i class="fa fa-shopping-cart"></i> Cart ({{ numberOfItems }})
+        </button>
 
-        <img :src="lesson.image" :alt="lesson.imageAlt" class="lesson-image">
-        <h2>{{ lesson.subject }}</h2>
-        <p>Location: {{ lesson.location }}</p>
-        <p>Price: £{{ lesson.price }}</p>
-        <p>Spaces left: {{ lesson.spaces }}</p>
+        <div v-if="!displayCart">
+            <img :src="lesson.image" :alt="lesson.imageAlt" class="lesson-image">
+            <h2>{{ lesson.subject }}</h2>
+            <p>Location: {{ lesson.location }}</p>
+            <p>Price: £{{ lesson.price }}</p>
+            <p>Spaces left: {{ lesson.spaces }}</p>
+            <button @click="addToCart" :disabled="!canAddToCart">Add to cart</button>
+        </div>
+
+        <div v-else>
+            <h2>Your Cart</h2>
+            <p>Checkout coming soon...</p>
+        </div>
     </div>
 
     <script type="module">
@@ -36,7 +47,26 @@
                         spaces: 5,
                         image: "images/maths.jpg",
                         imageAlt: "Open maths textbook with a pen"
-                    }
+                    },
+                    cart: [],
+                    displayCart: false
+                }
+            },
+            computed: {
+                canAddToCart() {
+                    return this.lesson.spaces > 0
+                },
+                numberOfItems() {
+                    return this.cart.length
+                }
+            },
+            methods: {
+                addToCart() {
+                    this.cart.push(this.lesson.id)
+                    this.lesson.spaces--
+                },
+                toggleCart() {
+                    this.displayCart = !this.displayCart
                 }
             }
         }).mount('#app')
