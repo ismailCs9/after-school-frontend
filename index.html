@@ -31,6 +31,14 @@
 
         <div v-else>
             <h2>Your Cart</h2>
+            <div v-for="lesson in cartLessons" :key="lesson.id" class="lesson">
+                <i :class="'fa ' + lesson.icon + ' lesson-icon'"></i>
+                <h3>{{ lesson.subject }}</h3>
+                <p>Location: {{ lesson.location }}</p>
+                <p>Price: £{{ lesson.price }}</p>
+                <p>Quantity: {{ countInCart(lesson.id) }}</p>
+                <button @click="removeFromCart(lesson)">Remove</button>
+            </div>
             <p>Checkout coming soon...</p>
         </div>
     </div>
@@ -61,6 +69,9 @@
             computed: {
                 numberOfItems() {
                     return this.cart.length
+                },
+                cartLessons() {
+                    return this.lessons.filter(lesson => this.countInCart(lesson.id) > 0)
                 }
             },
             methods: {
@@ -73,6 +84,19 @@
                 },
                 toggleCart() {
                     this.displayCart = !this.displayCart
+                },
+                countInCart(id) {
+                    return this.cart.filter(item => item === id).length
+                },
+                removeFromCart(lesson) {
+                    const index = this.cart.indexOf(lesson.id)
+                    if (index !== -1) {
+                        this.cart.splice(index, 1)
+                        lesson.spaces++
+                    }
+                    if (this.cart.length === 0) {
+                        this.displayCart = false
+                    }
                 }
             }
         }).mount('#app')
