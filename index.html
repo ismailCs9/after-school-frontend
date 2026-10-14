@@ -98,6 +98,10 @@
                     sortOrder: "asc"
                 }
             },
+            created() {
+                // runs automatically as soon as the app starts
+                this.fetchData()
+            },
             computed: {
                 sortedLessons() {
                     const attribute = this.sortAttribute
@@ -125,6 +129,16 @@
                 }
             },
             methods: {
+                async fetchData() {
+                    // ask our back-end server for the lessons
+                    try {
+                        const response = await fetch("http://localhost:3000/lessons")
+                        this.lessons = await response.json()
+                    } catch (error) {
+                        // server not running: keep the built-in lessons as a backup
+                        console.log("Could not reach the server, using built-in lessons")
+                    }
+                },
                 canAddToCart(lesson) {
                     return lesson.spaces > 0
                 },
